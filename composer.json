@@ -12,10 +12,7 @@
     },
     "autoload": {
         "classmap": {
-            "Seven\\Vars\\Strings": "Strings.php",
-            "Seven\\Vars\\Encoder": "Encoder.php",
-            "Seven\\Vars\\Arrays": "Arrays.php",
-            "Seven\\Vars\\Validation": "Validation.php"
+            "Seven\\Model\\ModelTraits": "ModelTraits.php",
         }
     },
     "require": {
@@ -30,7 +27,6 @@
         }
     ],
     "keywords": [
-        "encode", "encrypt", "decrypt",
-        "array manipulator", "string"
+        "dbal", "model", "database", "traits"
     ]
 }
