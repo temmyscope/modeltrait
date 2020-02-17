@@ -89,7 +89,7 @@ trait ModelTrait
 			case "findby":
 				$sql = "SELECT * FROM {$table} WHERE";
 				$values = [];
-				foreach ($args[0] as $key => $value) {
+				foreach ($args[0] as $key => $value) {					
 					$sql .= " $key = ? AND";
 					$values[] = $value;
 				}
