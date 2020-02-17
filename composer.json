@@ -1,0 +1,36 @@
+{
+    "name": "sevens/model-trait",
+    "description": "Model Traits for extending Doctrine's dbal functionality. To be used in the developer's main model.",
+    "type": "library",
+    "version": "v0.9.1",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "classmap": {
+            "Seven\\Vars\\Strings": "Strings.php",
+            "Seven\\Vars\\Encoder": "Encoder.php",
+            "Seven\\Vars\\Arrays": "Arrays.php",
+            "Seven\\Vars\\Validation": "Validation.php"
+        }
+    },
+    "require": {
+        "php": ">=7.2.0",
+        "doctrine/dbal": "v2.10.1"
+    },
+    "authors": [
+        {
+            "name": "Elisha Temiloluwa a.k.a TemmyScope",
+            "email": "temmyscope@protonmail.com",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "encode", "encrypt", "decrypt",
+        "array manipulator", "string"
+    ]
+}
