@@ -68,21 +68,21 @@ trait ModelTrait
 			case "update":
 				return $conn->update(static::$table, $args[0], $args[1]);
 
-				/**
-				* @param $data
-				* @example
-				* $data = [
-				*	'column' => 'data'
-				* 	'name' => 'John Well',
-				*	'username' => 'john086'
-				* ];
-				* @return string last Insert Id
-				*/
+			/**
+			* @param $data
+			* @example
+			* $data = [
+			*	'column' => 'data'
+			* 	'name' => 'John Well',
+			*	'username' => 'john086'
+			* ];
+			* @return string last Insert Id
+			*/
 			case "insert":
 				$conn->insert($table, $args[0]);
 				return $conn->lastInsertId();
 			/**
-			 * @param
+			 * @param Array $where clause
 			 *
 			 * @return array of arrays containing result set
 			**/
@@ -95,7 +95,20 @@ trait ModelTrait
 				}
 				$sql = rtrim($sql, ' AND');
 				return $conn->fetchAll("$sql", $values);
-
+			/**
+			* @param Array $where clause
+			*
+			* @return bool
+			**/
+			case 'exists':
+				$sql = "SELECT * FROM {$table} WHERE";
+				$values = [];
+				foreach ($args[0] as $key => $value) {
+					$sql .= " $key = ? AND";
+					$values[] = $value;
+				}
+				$sql = rtrim($sql, ' AND')." LIMIT 1";
+				return (empty($conn->fetchAll("$sql", $values))) ? false : true;
 			/**
 			 * @param string $search is the query to be searched for
 			 * @param string[] $searchable columns
@@ -120,8 +133,7 @@ trait ModelTrait
 			  		}
 		  		}
 		  		$where = rtrim($where, ' OR ');
-		  		$conn->fetchall("SELECT * FROM {$table} WHERE {$where}", $values);
-				return ;
+		  		return $conn->fetchall("SELECT * FROM {$table} WHERE {$where}", $values);
 
 			/**
 			 * @param string $column to be incremented
