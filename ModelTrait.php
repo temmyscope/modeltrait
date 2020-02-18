@@ -14,10 +14,11 @@ use Doctrine\DBAL\Query\QueryBuilder;
 trait ModelTrait
 {
 	/**
+	* The following protected properties must be implemented, defined and declared in the Model class using this trait
 	* @var static $table that is defined and declared in the child class of this model
 	* @example protected static $table = 'user'; 
 	*
-	* @var static $config that is defined and declared 
+	* @var static $config 
 	* @example
 	*	$config = [
 	*	    'dbname' => 'mydb',
@@ -33,9 +34,6 @@ trait ModelTrait
 	*
 	*
 	*/
-	private $config;
-	protected static $table;
-	protected static $fulltext;
 
 	/**
 	* __callStatic will be called from static content, that is, when calling a nonexistent
@@ -47,7 +45,7 @@ trait ModelTrait
 	*/
 	public static function __callStatic($method, $args)
 	{
-		$conn = DriverManager::getConnection(self::$config);
+		$conn = DriverManager::getConnection(static::$config);
 		$fluent = $conn->createQueryBuilder();
 		$table = static::$table;
 		$method = strtolower($method);
@@ -80,7 +78,7 @@ trait ModelTrait
 			*/
 			case "insert":
 				$conn->insert($table, $args[0]);
-				return $conn->lastInsertId();
+				return (int)$conn->lastInsertId();
 			/**
 			 * @param Array $where clause
 			 *
@@ -111,7 +109,7 @@ trait ModelTrait
 				return (empty($conn->fetchAll("$sql", $values))) ? false : true;
 			/**
 			 * @param string $search is the query to be searched for
-			 * @param string[] $searchable columns
+			 * @param string[] $searchable column(s)
 			 *
 			 * @return void
 			**/
@@ -126,8 +124,8 @@ trait ModelTrait
 		  				$values[] =  $query;
 		  			}
 		  		}
-		  		if(!empty($args)){
-		  			foreach($args as $column){															
+		  		if(!empty($args[0])){
+		  			foreach($args[0] as $column){															
 			  			$where .= "$column LIKE ? OR ";
 			  			$values[] =  $query;													
 			  		}
@@ -137,48 +135,85 @@ trait ModelTrait
 
 			/**
 			 * @param string $column to be incremented
-			 * @param value to use in incrementing
+			 * @param value to increment with
+			 * @param where[] clause
 			 * @return number of rows affected
 			**/
 			case "add":
+				$sql = "";
+				foreach ($args[2] as $key => $value) {					
+					$sql .= "$key = ? ";
+					$value = $value;
+					break;
+				}
 				return $fluent
 				    ->update($table)
-				    ->set($args[0], "{$args[0]} + {$args[1]}")->execute();
+				    ->set($args[0], "{$args[0]} + {$args[1]}")->where("{$sql}")->setParameter(0, $value)->execute();
 
 			/**
 			 * @param string $column to be incremented
 			 * @param value to use in decrementing
+			 * @param where[] clause
 			 * @return number of rows affected
 			**/
 			case "minus":
+				$sql = "";
+				foreach ($args[2] as $key => $value) {					
+					$sql .= "$key = ? ";
+					$value = $value;
+					break;
+				}
 				return $fluent
 				    ->update($table)
-				    ->set($args[0], "{$args[0]} - {$args[1]}")->execute();
+				    ->set($args[0], "{$args[0]} - {$args[1]}")->where("{$sql}")->setParameter(0, $value)->execute();
 			/**
 			 * @param string $column to be incremented
+			 * @param where[] clause
 			 * @return number of rows affected
 			**/
 			case "addone":
+				$sql = "";
+				foreach ($args[1] as $key => $value) {					
+					$sql .= "$key = ? ";
+					$value = $value;
+					break;
+				}
 				return $fluent
 				    ->update($table)
-				    ->set($args[0], "{$column} + 1")->execute();
+				    ->set($args[0], "{$args[0]} + 1")->where("{$sql}")->setParameter(0, $value)->execute();
 
 			/**
 			 * @param string $column to be decremented
+			 * @param where[] clause
 			 * @return number of rows affected
 			**/
 			case "minusone":
+				$sql = "";
+				foreach ($args[1] as $key => $value) {					
+					$sql .= "$key = ? ";
+					$value = $value;
+					break;
+				}
 				return $fluent
 				    ->update($table)
-				    ->set($args[0], "{$column} - 1")->execute();
+				    ->set($args[0], "{$args[0]} - 1")->where("{$sql}")->setParameter(0, $value)->execute();
 			/**
 			 * @param string column to count, default is *
 			 *
 			 * @return void
 			**/
 			case "count":
-				$column = $args[0] ?? 'id';
-				return $conn->fetchall("SELECT COUNT({$column}) FROM {$table} WHERE {$where}", $values);
+			$where = "";
+			$values = [];
+				if(isset($args[1])){
+					$where .= "WHERE ";
+		  			foreach($args[1] as $column => $value){															
+			  			$where .= "$column = ? AND ";
+			  			$values[] =  $value;													
+			  		}
+		  		}
+		  		$where = rtrim($where, ' AND ');
+				return (int)$conn->fetchall("SELECT COUNT({$args[0]}) as total FROM {$table} {$where}", $values)[0]['total'];
 			/**
 			 * @param array $where clause
 			 *
@@ -187,13 +222,18 @@ trait ModelTrait
 			case 'delete':
 				return $conn->delete(static::$table, $args[0]);
 
+			/**
+			 * @param array $where clause
+			 *
+			 * @return 
+			**/
 			case 'softdelete':
 				return $conn->update(static::$table, [ 'deleted' => 'true' ], $args[0]);
 			/**
 			 * @return Doctrine\DBAL $queryBuilder instance
 			**/
 			case 'fluent':
-				return $queryBuilder;
+				return $fluent;
 			/**
 			 * If things go south and the called method does not exist
 			 *
