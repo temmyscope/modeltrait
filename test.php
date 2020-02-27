@@ -21,7 +21,7 @@ class Model
 class User extends Model
 {
 	protected static $fulltext = [];
-	protected static $table = 'userd';
+	protected static $table = 'user';
 }
 
 User::all();

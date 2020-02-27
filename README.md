@@ -29,3 +29,66 @@ The only methods available are :
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
+
+
+An Example use case of this trait and how to fuse it right into your model classes is shown below:
+
+<?php
+
+//import the library into your model class namespace
+use Seven\Model\ModelTrait;
+
+
+//setup your model class and the variables (with these names) necessary for the trait
+
+class Model
+{
+	use ModelTrait;
+
+	/**
+	* This variable is extremely essential to the proper functioning of the trait due to the underlying Doctrine DBAL package  
+	*/
+	protected static $config = [
+		'dbname' => 'ratemylecturer',
+		'user' => 'root',
+		'password' => '',
+		'host' => 'localhost',
+	    'driver' => 'pdo_mysql'
+	];
+
+}
+
+//set up individual model child classes with their static table name set
+//The ModelTrait uses late static binding.
+
+class User extends Model
+{
+	//the table variable
+	protected static $table = 'user';
+
+	//the fulltext columns in the above table, for optimized complicated Match...Against Queries.
+	protected static $fulltext = [];
+}
+
+
+//You can call the methods like these:
+
+User::all();
+
+User::insert([
+	"first_name" => "Elisha", "other_names" => "Temiloluwa", "last_name" => "Oyawale", "timestamp" => "2019-11-02 15:28:56",
+]);
+
+User::findby([ "other_names" => "Aminat" ]);
+
+User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);
+
+User::exists(['id' => 2]);
+
+User::search('Elisha', ['firstname', 'lastname']);
+
+User::addOne('views', ['id' => 2]);
+
+User::delete(['id' => 2])
+
+User::fluent(); //returns an instance of Doctrines's DBAL QueryBuilder

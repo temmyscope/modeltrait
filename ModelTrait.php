@@ -18,9 +18,8 @@ trait ModelTrait
 	* @var static $table that is defined and declared in the child class of this model
 	* @example protected static $table = 'user'; 
 	*
-	* @var static $config 
 	* @example
-	*	$config = [
+	* @var static $config = [
 	*	    'dbname' => 'mydb',
 	*	    'user' => 'user',
 	*	    'password' => 'secret',
@@ -28,21 +27,11 @@ trait ModelTrait
 	*	    'driver' => 'pdo_mysql',
 	*	];
 	*
-	* @var $fulltext refers to fulltext colums that can be searched using complicated match...against queries.
-	*
-	*
+	* @var $fulltext refers to fulltext colums that can be searched using complicated match...against sql queries.
 	*
 	*
 	*/
 
-	/**
-	* __callStatic will be called from static content, that is, when calling a nonexistent
-	* static method:
-	* 	Foo::method($arg, $arg1);
-	*
-	* First argument will contain the method name (in example above it will be "method"),
-	* and the second will contain the values of $arg and $arg1 as an array.
-	*/
 	public static function __callStatic($method, $args)
 	{
 		$conn = DriverManager::getConnection(static::$config);
@@ -111,7 +100,7 @@ trait ModelTrait
 			 * @param string $search is the query to be searched for
 			 * @param string[] $searchable column(s)
 			 *
-			 * @return void
+			 * @return array of arrays containing result set
 			**/
 			case "search":
 				$query = "%".$args[0]."%";
@@ -132,7 +121,16 @@ trait ModelTrait
 		  		}
 		  		$where = rtrim($where, ' OR ');
 		  		return $conn->fetchall("SELECT * FROM {$table} WHERE {$where}", $values);
-
+		  	/**
+			 * @param int $limit is the total that can be retrieved per page
+			 * @param int $page_number 
+			 * 
+			 * @return array of arrays containing result set
+			**/
+			case "paginate":
+				$offset = ($args[1] > 0) ? (($args[1] * $args[0])-$args[0] ) . ", " : 0 . ", ";
+				$clause .= $offset. $args[0];
+		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}", $values);
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
@@ -200,7 +198,7 @@ trait ModelTrait
 			/**
 			 * @param string column to count, default is *
 			 *
-			 * @return void
+			 * @return int value
 			**/
 			case "count":
 			$where = "";
@@ -217,7 +215,7 @@ trait ModelTrait
 			/**
 			 * @param array $where clause
 			 *
-			 * @return 
+			 * @return number of affected columns
 			**/
 			case 'delete':
 				return $conn->delete(static::$table, $args[0]);
@@ -225,12 +223,12 @@ trait ModelTrait
 			/**
 			 * @param array $where clause
 			 *
-			 * @return 
+			 * @return number of affected columns
 			**/
 			case 'softdelete':
 				return $conn->update(static::$table, [ 'deleted' => 'true' ], $args[0]);
 			/**
-			 * @return Doctrine\DBAL $queryBuilder instance
+			 * @return Doctrine\DBAL fluent $queryBuilder instance
 			**/
 			case 'fluent':
 				return $fluent;
