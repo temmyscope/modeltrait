@@ -24,6 +24,8 @@ The only methods available are :
 
 => count(column to count,  [ where column => value]);
 
+=> paginate('number of items to return per page', page number); 
+
 => delete([ where column => value ])
 
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
@@ -88,6 +90,8 @@ User::exists(['id' => 2]);
 User::search('Elisha', ['firstname', 'lastname']);
 
 User::addOne('views', ['id' => 2]);
+
+User::paginate(10, (int)$_GET['page']);
 
 User::delete(['id' => 2])
 
