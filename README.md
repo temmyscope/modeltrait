@@ -2,8 +2,9 @@ A Model Traits Package built on top of Doctrine's DBAL library, for extending an
 
 The ModelTrait should be used inside the Model Class of your project. It requires Doctrine's DBAL package.
 
-The only methods available are :
+#The only methods available are :
 
+```bash
 => all() // returns all rows in the table 
 
 => findby( [ 'column' => 'value' ] )
@@ -31,12 +32,11 @@ The only methods available are :
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
+```
 
+##An Example use case of this trait and how to fuse it right into your model classes is shown below:
 
-An Example use case of this trait and how to fuse it right into your model classes is shown below:
-
-<?php
-
+```bash
 //import the library into your model class namespace
 use Seven\Model\ModelTrait;
 
@@ -96,3 +96,4 @@ User::paginate(10, (int)$_GET['page']);
 User::delete(['id' => 2])
 
 User::fluent(); //returns an instance of Doctrines's DBAL QueryBuilder
+```
