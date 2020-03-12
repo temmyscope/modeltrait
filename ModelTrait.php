@@ -213,6 +213,11 @@ trait ModelTrait
 		  		$where = rtrim($where, ' AND ');
 				return (int)$conn->fetchall("SELECT COUNT({$args[0]}) as total FROM {$table} {$where}", $values)[0]['total'];
 			/**
+			 * @return array columns
+			**/
+			case 'showcolumns':										
+  				return $conn->fetchall("SHOW COLUMNS FROM {$table}");
+			/**
 			 * @param array $where clause
 			 *
 			 * @return number of affected columns
