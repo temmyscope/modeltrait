@@ -83,6 +83,24 @@ trait ModelTrait
 				$sql = rtrim($sql, ' AND');
 				return $conn->fetchAll("$sql", $values);
 			/**
+			 * @param Array $where clause
+			 *
+			 * @return array of arrays containing result set
+			**/
+			case "findfirst":
+				$sql = "SELECT * FROM {$table}";
+				$where = "";
+				$values = [];
+				if (!empty($args)) {
+					$where .= " WHERE ";
+					foreach ($args[0] as $key => $value) {					
+						$where .= " $key = ? AND";
+						$values[] = $value;
+					}
+					$where = rtrim($where, ' AND');
+				}
+				return (object)$conn->fetchAll("$sql $where", $values)[0] ?? [];
+			/**
 			* @param Array $where clause
 			*
 			* @return bool
@@ -105,10 +123,10 @@ trait ModelTrait
 			case "search":
 				$query = "%".$args[0]."%";
 				array_shift($args);
-		  		$where = '';																			
-		  		$values = [];																			
-		  		if(!empty(static::$fulltext)){																	
-		  			foreach ($fulltext as $key){														
+		  		$where = '';
+		  		$values = [];
+		  		if(!empty(static::$fulltext)){
+		  			foreach ($fulltext as $key){
 		  				$where .= "MATCH ({$key}) AGAINST (?) OR ";
 		  				$values[] =  $query;
 		  			}
@@ -243,7 +261,7 @@ trait ModelTrait
 			 * @return void
 			**/
 			default:
-				throw new BadMethodCallException("Undefined method $method");
+				throw new BadMethodCallException("Undefined method '$method'");
 		}
 
 	}

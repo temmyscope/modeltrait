@@ -32,11 +32,13 @@ The ModelTrait should be used inside the Model Class of your project. It require
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
+
 ```
+
+```php
 
 ##An Example use case of this trait and how to fuse it right into your model classes is shown below:
 
-```bash
 //import the library into your model class namespace
 use Seven\Model\ModelTrait;
 
@@ -78,7 +80,10 @@ class User extends Model
 User::all();
 
 User::insert([
-	"first_name" => "Elisha", "other_names" => "Temiloluwa", "last_name" => "Oyawale", "timestamp" => "2019-11-02 15:28:56",
+	"first_name" => "Elisha", 
+	"other_names" => "Temiloluwa", 
+	"last_name" => "Oyawale", 
+	"timestamp" => "2019-11-02 15:28:56"
 ]);
 
 User::findby([ "other_names" => "Aminat" ]);
