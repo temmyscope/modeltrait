@@ -3,7 +3,7 @@ namespace Seven\Model;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
-use \BadMethodCallException;
+use \Exception;
 
 /**
  * Should be used in a model class that defines all of the initialised variables 
@@ -54,7 +54,7 @@ trait ModelTrait
 			 * @return void
 			**/
 			case "update":
-				return $conn->update(static::$table, $args[0], $args[1]);
+				return $conn->update($table, $args[0], $args[1]);
 
 			/**
 			 * @param striing $table to perform queries on
@@ -295,7 +295,16 @@ trait ModelTrait
 			 * @return void
 			**/
 			case "update":
-				return $conn->update(static::$table, $args[0], $args[1]);
+				return $conn->update($table, $args[0], $args[1]);
+
+			/**
+			 * @param striing $table to perform queries on
+			 * @return Model instance
+			**/
+			case 'table':
+				static::$table = $args[0];
+				return new static();
+
 			/**
 			* @param $data
 			* @example
@@ -482,7 +491,7 @@ trait ModelTrait
 			 * @return number of affected columns
 			**/
 			case 'delete':
-				return $conn->delete(static::$table, $args[0]);
+				return $conn->delete($table, $args[0]);
 
 			/**
 			 * @param array $where clause
@@ -490,7 +499,7 @@ trait ModelTrait
 			 * @return number of affected columns
 			**/
 			case 'softdelete':
-				return $conn->update(static::$table, [ 'deleted' => 'true' ], $args[0]);
+				return $conn->update($table, [ 'deleted' => 'true' ], $args[0]);
 			/**
 			 * @return Doctrine\DBAL fluent $queryBuilder instance
 			**/
@@ -502,7 +511,7 @@ trait ModelTrait
 			 * @return void
 			**/
 			default:
-				throw new BadMethodCallException("Undefined method '$method'");
+				throw new Exception("Undefined method '$method'");
 		}
 	}
 }
