@@ -100,7 +100,8 @@ trait ModelTrait
 					}
 					$where = rtrim($where, ' AND');
 				}
-				return (object)$conn->fetchAll("$sql $where", $values)[0] ?? [];
+				$data = $conn->fetchAll("$sql $where", $values);
+				return (!empty($data)) ? (object)$data[0] : [];
 			/**
 			* @param Array $where clause
 			*
@@ -270,7 +271,7 @@ trait ModelTrait
 	 * @param striing $table to perform queries on
 	 * @return Model instance
 	**/
-	public function setTable($table)
+	public function setTable(string $table): self
 	{
 		static::$table = $table;
 		return new static();
