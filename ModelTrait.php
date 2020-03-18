@@ -3,6 +3,7 @@ namespace Seven\Model;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
+use \BadMethodCallException;
 
 /**
  * Should be used in a model class that defines all of the initialised variables 
