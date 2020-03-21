@@ -69,6 +69,7 @@ trait ModelTrait
 			case "insert":
 				$conn->insert($table, $args[0]);
 				return (int)$conn->lastInsertId();
+
 			/**
 			 * @param Array $where clause
 			 *
@@ -83,6 +84,7 @@ trait ModelTrait
 				}
 				$sql = rtrim($sql, ' AND');
 				return $conn->fetchAll("$sql", $values);
+
 			/**
 			 * @param Array $where clause
 			 *
