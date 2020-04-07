@@ -151,8 +151,9 @@ trait ModelTrait
 			**/
 			case "paginate":
 				$offset = ($args[1] > 0) ? (($args[1] * $args[0])-$args[0] ) . ", " : 0 . ", ";
+				$clause = 'LIMIT ';
 				$clause .= $offset. $args[0];
-		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}", $values);
+		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}");
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
@@ -387,8 +388,9 @@ trait ModelTrait
 			**/
 			case "paginate":
 				$offset = ($args[1] > 0) ? (($args[1] * $args[0])-$args[0] ) . ", " : 0 . ", ";
+				$clause = 'LIMIT ';
 				$clause .= $offset. $args[0];
-		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}", $values);
+		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}"); 
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
