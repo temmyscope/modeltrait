@@ -100,5 +100,7 @@ User::paginate(10, (int)$_GET['page']);
 
 User::delete(['id' => 2])
 
+User::showColumns() //showns all the columns in this table as properties of the stdClass object
+
 User::fluent(); //returns an instance of Doctrines's DBAL QueryBuilder
 ```

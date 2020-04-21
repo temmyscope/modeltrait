@@ -239,7 +239,7 @@ trait ModelTrait
 			 * @return array columns
 			**/
 			case 'showcolumns':										
-  				return $conn->fetchall("SHOW COLUMNS FROM {$table}");
+  				return (object)$conn->fetchall("SHOW COLUMNS FROM {$table}");
 			/**
 			 * @param array $where clause
 			 *
@@ -476,7 +476,7 @@ trait ModelTrait
 			 * @return array columns
 			**/
 			case 'showcolumns':										
-  				return $conn->fetchall("SHOW COLUMNS FROM {$table}");
+  				return (object)$conn->fetchall("SHOW COLUMNS FROM {$table}");
 			/**
 			 * @param array $where clause
 			 *
