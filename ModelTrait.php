@@ -130,7 +130,7 @@ trait ModelTrait
 		  		$where = '';
 		  		$values = [];
 		  		if(!empty(static::$fulltext)){
-		  			foreach ($fulltext as $key){
+		  			foreach (static::$fulltext as $key){
 		  				$where .= "MATCH ({$key}) AGAINST (?) OR ";
 		  				$values[] =  $query;
 		  			}
@@ -367,7 +367,7 @@ trait ModelTrait
 		  		$where = '';
 		  		$values = [];
 		  		if(!empty(static::$fulltext)){
-		  			foreach ($fulltext as $key){
+		  			foreach (static::$fulltext as $key){
 		  				$where .= "MATCH ({$key}) AGAINST (?) OR ";
 		  				$values[] =  $query;
 		  			}
