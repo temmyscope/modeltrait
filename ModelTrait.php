@@ -71,6 +71,35 @@ trait ModelTrait
 				return (int)$conn->lastInsertId();
 
 			/**
+			 * @param [] $where clause
+			 * @param [] $others such as ['groupby'=> , 'orderby'=>, 'limit'=>]
+			 *
+			 * @return array of arrays containing result set
+			*/
+			case 'query':
+				$sql = "SELECT * FROM {$table}";
+				$values = [];
+				if ( !empty($args[0]) ) {		
+					$sql .= " WHERE";												
+					foreach ( $args[0] as $key => $value) {
+						$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);						
+					}																				
+					$sql = rtrim($sql, ' AND');																		
+				}																			
+				if (array_key_exists('groupby', $args[1] ) && !empty($args[1]['groupby'])) {
+					$sql .= " GROUP BY {$args[1]['groupby']}";				
+				}
+				if (array_key_exists('orderby', $args[1] ) && !empty($args[1]['orderby'])) {												
+					$sql .= " ORDER BY {$args[1]['orderby']}";											
+				}											
+				if (array_key_exists('limit', $args[1] ) && !empty($args[1]['limit'])) {												
+					$sql .= " LIMIT {$args[1]['limit']}";												
+				}
+				return $conn->fetchAll("$sql", $values);
+
+			/**
 			 * @param Array $where clause
 			 *
 			 * @return array of arrays containing result set
@@ -79,8 +108,9 @@ trait ModelTrait
 				$sql = "SELECT * FROM {$table} WHERE";
 				$values = [];
 				foreach ($args[0] as $key => $value) {					
-					$sql .= " $key = ? AND";
-					$values[] = $value;
+					$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
 				}
 				$sql = rtrim($sql, ' AND');
 				return $conn->fetchAll("$sql", $values);
@@ -96,9 +126,10 @@ trait ModelTrait
 				$values = [];
 				if (!empty($args)) {
 					$where .= " WHERE ";
-					foreach ($args[0] as $key => $value) {					
-						$where .= " $key = ? AND";
-						$values[] = $value;
+					foreach ($args[0] as $key => $value) {
+						$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);
 					}
 					$where = rtrim($where, ' AND');
 				}
@@ -113,8 +144,9 @@ trait ModelTrait
 				$sql = "SELECT * FROM {$table} WHERE";
 				$values = [];
 				foreach ($args[0] as $key => $value) {
-					$sql .= " $key = ? AND";
-					$values[] = $value;
+					$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
 				}
 				$sql = rtrim($sql, ' AND')." LIMIT 1";
 				return (empty($conn->fetchAll("$sql", $values))) ? false : true;
@@ -229,17 +261,23 @@ trait ModelTrait
 				if(isset($args[1])){
 					$where .= "WHERE ";
 		  			foreach($args[1] as $column => $value){															
-			  			$where .= "$column = ? AND ";
-			  			$values[] =  $value;													
+						$where .= ( static::negator($value) === true ) ? " {$column}  != ? AND" : " {$column}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);												
 			  		}
 		  		}
-		  		$where = rtrim($where, ' AND ');
+		  		$where = rtrim($where, ' AND');
 				return (int)$conn->fetchall("SELECT COUNT({$args[0]}) as total FROM {$table} {$where}", $values)[0]['total'];
 			/**
 			 * @return array columns
 			**/
-			case 'showcolumns':										
-  				return (object)$conn->fetchall("SHOW COLUMNS FROM {$table}");
+			case 'showcolumns':
+				$t = $conn->fetchall("SHOW COLUMNS FROM {$table}");
+				$columns = [];
+				foreach($t as $key => $value){
+					$columns[$value['Field']] = true;
+				}
+  				return $columns;
 			/**
 			 * @param array $where clause
 			 *
@@ -278,9 +316,9 @@ trait ModelTrait
 		$method = strtolower($method);
 		switch ($method) {
 			/**
+			 * 
 			 *
-			 *
-			 * @return array
+			 * @return void
 			**/
 			case "all":
 				return $conn->fetchAll("SELECT * FROM {$table}");
@@ -308,6 +346,35 @@ trait ModelTrait
 				return (int)$conn->lastInsertId();
 
 			/**
+			 * @param [] $where clause
+			 * @param [] $others such as ['groupby'=> , 'orderby'=>, 'limit'=>]
+			 *
+			 * @return array of arrays containing result set
+			*/
+			case 'query':
+				$sql = "SELECT * FROM {$table}";
+				$values = [];
+				if ( !empty($args[0]) ) {		
+					$sql .= " WHERE";												
+					foreach ( $args[0] as $key => $value) {
+						$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);						
+					}																				
+					$sql = rtrim($sql, ' AND');																		
+				}																			
+				if (array_key_exists('groupby', $args[1] ) && !empty($args[1]['groupby'])) {
+					$sql .= " GROUP BY {$args[1]['groupby']}";				
+				}
+				if (array_key_exists('orderby', $args[1] ) && !empty($args[1]['orderby'])) {												
+					$sql .= " ORDER BY {$args[1]['orderby']}";											
+				}											
+				if (array_key_exists('limit', $args[1] ) && !empty($args[1]['limit'])) {												
+					$sql .= " LIMIT {$args[1]['limit']}";												
+				}
+				return $conn->fetchAll("$sql", $values);
+
+			/**
 			 * @param Array $where clause
 			 *
 			 * @return array of arrays containing result set
@@ -316,8 +383,9 @@ trait ModelTrait
 				$sql = "SELECT * FROM {$table} WHERE";
 				$values = [];
 				foreach ($args[0] as $key => $value) {					
-					$sql .= " $key = ? AND";
-					$values[] = $value;
+					$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
 				}
 				$sql = rtrim($sql, ' AND');
 				return $conn->fetchAll("$sql", $values);
@@ -333,9 +401,10 @@ trait ModelTrait
 				$values = [];
 				if (!empty($args)) {
 					$where .= " WHERE ";
-					foreach ($args[0] as $key => $value) {					
-						$where .= " $key = ? AND";
-						$values[] = $value;
+					foreach ($args[0] as $key => $value) {
+						$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);
 					}
 					$where = rtrim($where, ' AND');
 				}
@@ -350,8 +419,9 @@ trait ModelTrait
 				$sql = "SELECT * FROM {$table} WHERE";
 				$values = [];
 				foreach ($args[0] as $key => $value) {
-					$sql .= " $key = ? AND";
-					$values[] = $value;
+					$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
 				}
 				$sql = rtrim($sql, ' AND')." LIMIT 1";
 				return (empty($conn->fetchAll("$sql", $values))) ? false : true;
@@ -390,7 +460,7 @@ trait ModelTrait
 				$offset = ($args[1] > 0) ? (($args[1] * $args[0])-$args[0] ) . ", " : 0 . ", ";
 				$clause = 'LIMIT ';
 				$clause .= $offset. $args[0];
-		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}"); 
+		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}");
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
@@ -466,17 +536,23 @@ trait ModelTrait
 				if(isset($args[1])){
 					$where .= "WHERE ";
 		  			foreach($args[1] as $column => $value){															
-			  			$where .= "$column = ? AND ";
-			  			$values[] =  $value;													
+						$where .= ( static::negator($value) === true ) ? " {$column}  != ? AND" : " {$column}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);												
 			  		}
 		  		}
-		  		$where = rtrim($where, ' AND ');
+		  		$where = rtrim($where, ' AND');
 				return (int)$conn->fetchall("SELECT COUNT({$args[0]}) as total FROM {$table} {$where}", $values)[0]['total'];
 			/**
 			 * @return array columns
 			**/
-			case 'showcolumns':										
-  				return (object)$conn->fetchall("SHOW COLUMNS FROM {$table}");
+			case 'showcolumns':
+				$t = $conn->fetchall("SHOW COLUMNS FROM {$table}");
+				$columns = [];
+				foreach($t as $key => $value){
+					$columns[$value['Field']] = true;
+				}
+  				return $columns;
 			/**
 			 * @param array $where clause
 			 *
@@ -508,12 +584,24 @@ trait ModelTrait
 	}
 
 	/**
-	 * @param striing $table to perform queries on
+	 * @param string $table to perform queries on
 	 * @return Model instance
 	**/
 	public function setTable(string $table): self
 	{
 		static::$table = $table;
 		return new static();
+	}
+
+	/** Checks if a string contains !
+	 * @param string $value to test
+	 * @return bool
+	**/
+	public function negator(string $value): bool
+	{
+		if (strpos($value, '!' ) !== false) {
+			return true;
+		}
+		return false;
 	}
 }
