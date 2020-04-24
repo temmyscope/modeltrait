@@ -7,6 +7,8 @@ The ModelTrait should be used inside the Model Class of your project. It require
 ```bash
 => all() // returns all rows in the table 
 
+=> query(['columns' => 'values'], ['groupby' => '', 'orderby' => '', 'limit' => 10]);
+
 => findby( [ 'column' => 'value' ] )
 
 => update([ "column" => "new value" ], $where = [ "id" => 1 ]);
@@ -33,6 +35,13 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
 
+```
+
+Version 1.5.0 brings support for negators to all selector method that accept clause(s) including exists() and count()
+
+e.g Users::findby([ 'deleted' => '!false' ]) is equivalent to 
+```sql 
+SELECT * FROM users WHERE deleted != 'false';
 ```
 
 ```php
@@ -78,6 +87,8 @@ class User extends Model
 //You can call the methods like these:
 
 User::all();
+
+User::query(['deleted' => 'false'], ['groupby' => 'year', 'orderby' => 'id', 'limit' => 10]);
 
 User::insert([
 	"first_name" => "Elisha", 
