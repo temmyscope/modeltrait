@@ -37,12 +37,18 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 ```
 
-Version 1.5.0 brings support for negators to all selector method that accept clause(s) including exists() and count()
+Version 1.5.0 brings :
+
+=> addition of query method that accepts group, order and limits conditions.
+
+=>support for negators to all selector method that accept clause(s) including exists() and count()
 
 e.g Users::findby([ 'deleted' => '!false' ]) is equivalent to 
 ```sql 
 SELECT * FROM users WHERE deleted != 'false';
 ```
+
+
 
 ```php
 
