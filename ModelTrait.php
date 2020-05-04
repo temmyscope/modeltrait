@@ -64,7 +64,7 @@ trait ModelTrait
 			* 	'name' => 'John Well',
 			*	'username' => 'john086'
 			* ];
-			* @return string last Insert Id
+			* @return int last Insert Id
 			*/
 			case "insert":
 				$conn->insert($table, $args[0]);
@@ -587,7 +587,7 @@ trait ModelTrait
 	 * @param string $table to perform queries on
 	 * @return Model instance
 	**/
-	public function setTable(string $table): self
+	public static function setTable(string $table): self
 	{
 		static::$table = $table;
 		return new static();
