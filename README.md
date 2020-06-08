@@ -17,14 +17,6 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => search('search for this string', [columns to check]);
 
-=> add('column to increment', value to add, ['where column' => value]) the where clause only loads a sing "column = ?"
-
-=> minus('column to decreas', value to deduct, ['where column' => value]) the where clause only loads a sing "column = ?"
-
-=> addOne('column to increment', ['where column' => value]) the where clause only loads a sing "column = ?"
-
-=> minusOne('column to decrease', ['where column' => value]) the where clause only loads a sing "column = ?"
-
 => count(column to count,  [ where column => value]);
 
 => paginate('number of items to return per page', page number); 
@@ -34,6 +26,18 @@ The ModelTrait should be used inside the Model Class of your project. It require
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
+```
+
+```
+Note: the where clause only loads a single column condition i.e. "column = ?"
+
+=> add('column to increment', value to add, ['where column' => value]) 
+
+=> minus('column to decreas', value to deduct, ['where column' => value]) the where clause only loads a single "column = ?"
+
+=> addOne('column to increment', ['where column' => value]) the where clause only loads a sing "column = ?"
+
+=> minusOne('column to decrease', ['where column' => value]) the where clause only loads a sing "column = ?"
 
 ```
 
@@ -44,6 +48,7 @@ Version 1.5.0 brings :
 =>support for negators to all selector method that accept clause(s) including exists() and count()
 
 e.g Users::findby([ 'deleted' => '!false' ]) is equivalent to 
+
 ```sql 
 SELECT * FROM users WHERE deleted != 'false';
 ```

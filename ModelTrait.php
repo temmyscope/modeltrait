@@ -71,6 +71,27 @@ trait ModelTrait
 				return (int)$conn->lastInsertId();
 
 			/**
+			* @param string[] $columns
+			* @param optional [] $clause
+			* @return array
+			*/
+			case 'distinct':
+				$columns = implode(', ', $args[0]);
+				$sql = "SELECT DISTINCT {$columns} FROM {$table}";
+				$where = "";
+				$values = [];
+				if (!empty($args[1])) {
+					$where .= " WHERE ";
+					foreach ($args[1] as $key => $value) {
+						$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);
+					}
+					$where = rtrim($where, ' AND');
+				}
+				return $conn->fetchAll("{$sql} {$where}", $values);
+
+			/**
 			 * @param [] $where clause
 			 * @param [] $others such as ['groupby'=> , 'orderby'=>, 'limit'=>]
 			 *
@@ -98,7 +119,30 @@ trait ModelTrait
 					$sql .= " LIMIT {$args[1]['limit']}";												
 				}
 				return $conn->fetchAll("$sql", $values);
-
+			
+			/**
+			 * @param Array $where clause OR $where clause
+			 *
+			 * @return array of arrays containing result set
+			**/
+			case 'findor':
+				$sql = "SELECT * FROM {$table} WHERE";
+				$values = [];
+				$where1 = "";
+				foreach ($args[0] as $key => $value) {					
+					$where1 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
+				}
+				$where2 = "";
+				foreach ($args[1] as $key => $value) {					
+					$where2 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
+				}
+				$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
+				return $conn->fetchAll("$sql", $values);
+				break;
 			/**
 			 * @param Array $where clause
 			 *
@@ -133,7 +177,7 @@ trait ModelTrait
 					}
 					$where = rtrim($where, ' AND');
 				}
-				$data = $conn->fetchAll("$sql $where", $values);
+				$data = $conn->fetchAll("$sql $where LIMIT 1", $values);
 				return (!empty($data)) ? (object)$data[0] : [];
 			/**
 			* @param Array $where clause
@@ -344,6 +388,26 @@ trait ModelTrait
 			case "insert":
 				$conn->insert($table, $args[0]);
 				return (int)$conn->lastInsertId();
+			/**
+			* @param string[] $columns
+			* @param optional [] $clause
+			* @return array
+			*/
+			case 'distinct':
+				$columns = implode(', ', $args[0]);
+				$sql = "SELECT DISTINCT {$columns} FROM {$table}";
+				$where = "";
+				$values = [];
+				if (!empty($args[1])) {
+					$where .= " WHERE ";
+					foreach ($args[1] as $key => $value) {
+						$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+						$a = 1;
+						$values[] = str_replace('!', '', $value, $a);
+					}
+					$where = rtrim($where, ' AND');
+				}
+				return $conn->fetchAll("{$sql} {$where}", $values);
 
 			/**
 			 * @param [] $where clause
@@ -373,7 +437,31 @@ trait ModelTrait
 					$sql .= " LIMIT {$args[1]['limit']}";												
 				}
 				return $conn->fetchAll("$sql", $values);
-
+			
+			/**
+			 * @param Array $where clause OR $where clause
+			 *
+			 * @return array of arrays containing result set
+			**/
+			case 'findor':
+				$sql = "SELECT * FROM {$table} WHERE";
+				$values = [];
+				$where1 = "";
+				foreach ($args[0] as $key => $value) {					
+					$where1 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
+				}
+				$where2 = "";
+				foreach ($args[1] as $key => $value) {					
+					$where2 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+					$a = 1;
+					$values[] = str_replace('!', '', $value, $a);
+				}
+				$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
+				return $conn->fetchAll("$sql", $values);
+				break;
+				
 			/**
 			 * @param Array $where clause
 			 *
@@ -408,7 +496,7 @@ trait ModelTrait
 					}
 					$where = rtrim($where, ' AND');
 				}
-				$data = $conn->fetchAll("$sql $where", $values);
+				$data = $conn->fetchAll("$sql $where LIMIT 1", $values);
 				return (!empty($data)) ? (object)$data[0] : [];
 			/**
 			* @param Array $where clause
@@ -597,9 +685,9 @@ trait ModelTrait
 	 * @param string $value to test
 	 * @return bool
 	**/
-	public function negator(string $value): bool
+	public static function negator(string $value): bool
 	{
-		if (strpos($value, '!' ) !== false) {
+		if ( $value[0] === "!"){
 			return true;
 		}
 		return false;

@@ -29,6 +29,7 @@ User::insert([
 	"first_name" => "Elisha", "other_names" => "Temiloluwa", "last_name" => "Oyawale", "timestamp" => "2019-11-02 15:28:56",
 ]);
 User::findby([ "other_names" => "Aminat" ]);
+User::findfirs([ "first_name" => "!larry" ]);
 User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);
 User::exists(['id' => 2]);
 User::search(['Elisha'], ['firstname', 'lastname']);
