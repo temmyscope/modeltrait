@@ -11,6 +11,10 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => findby( [ 'column' => 'value' ] )
 
+=> findor
+
+=> findin("values", "column")
+
 => update([ "column" => "new value" ], $where = [ "id" => 1 ]);
 
 => exists(['column' => 'value']);
@@ -23,7 +27,7 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => delete([ where column => value ])
 
-=> softdelete([ where column => value ]) //Constrain: the table must have a deleted column 
+=> softdelete([ where column => value ]) //Constrain: the table must have a deleted column , which will be set to true; else it will return a fatal error.
 
 => fluent() returns an instance of the Doctrine's DBAL query builder
 ```
@@ -41,11 +45,11 @@ Note: the where clause only loads a single column condition i.e. "column = ?"
 
 ```
 
-Version 1.5.0 brings :
+Version 1.5.0 upward brings :
 
 => addition of query method that accepts group, order and limits conditions.
 
-=>support for negators to all selector method that accept clause(s) including exists() and count()
+=>support for negators to all selector method that accept clause(s) including exists(), findOr, findIn and count() queries.
 
 e.g Users::findby([ 'deleted' => '!false' ]) is equivalent to 
 
@@ -53,6 +57,29 @@ e.g Users::findby([ 'deleted' => '!false' ]) is equivalent to
 SELECT * FROM users WHERE deleted != 'false';
 ```
 
+=> addition of findor for select this OR that statements
+e.g. Users::findor(["name" => "Elisha"], ["name" => "Temiloluwa"]);
+```sql 
+SELECT * FROM users WHERE name = "Elisha" OR name = "Temiloluwa";
+```
+
+=> addition of findin for select in statements
+e.g. Users::findin("1, 2, 5, 7", "id");
+```sql 
+SELECT * FROM users WHERE id IN (1, 2, 3, 5, 7);
+```
+
+=> addition of distinct for select distinct statements
+e.g. Users::distinct("name");
+```sql 
+SELECT DISTINCT name FROM users;
+```
+
+=> addition of updateMany for multiple updates at once 
+e.g. User::updateMany(['verified'=> 'true', 'active' => 'false'], 'id', [1, 9, 10]);
+```sql 
+UPDATE user SET verified = 'true', active = 'false' WHERE id IN (1, 9, 10);
+```
 
 
 ```php
@@ -109,6 +136,12 @@ User::insert([
 ]);
 
 User::findby([ "other_names" => "Aminat" ]);
+
+User::findor(["name" => "Elisha"], ["name" => "scope"]);
+
+User::findin("1, 2, 3", "id");
+
+User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);
 
 User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);
 

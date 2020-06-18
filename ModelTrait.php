@@ -143,6 +143,21 @@ trait ModelTrait
 				$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
 				return $conn->fetchAll("$sql", $values);
 				break;
+
+			/**
+			 * @param string $values to check e.g. "1,3, 4, 5, 7"
+			 * @param string $column to use e.g. "id"
+			 * @return array of arrays containing result set
+			**/
+			case 'findin':
+				$sql = "SELECT * FROM {$table} WHERE";
+				$values = $args[0];
+				$column = str_replace('!', '', $arg[1], $a = 1);
+				$sql .= ( static::negator($column) === true ) ? " {$column} NOT IN " : " {$column} IN ";
+				$sql .= " ($values)";
+				return $conn->fetchAll("$sql", $values);
+				break;
+
 			/**
 			 * @param Array $where clause
 			 *
@@ -230,6 +245,24 @@ trait ModelTrait
 				$clause = 'LIMIT ';
 				$clause .= $offset. $args[0];
 		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}");
+		  	/**
+			 * @param array $args[0] updates
+			 * @param array $args[1] column's value to check
+			 * @param array $args[2] values to check column against
+			 * @return array of arrays containing result set
+			**/
+		  	case 'updatemany':
+		  		$sql = "";
+		  		$update = [];
+				foreach ($args[0] as $key => $value) {					
+					$sql .= "$key = ? ,";
+					$update[] = $value;
+					break;
+				}
+				$sql = trim($sql, ' ,');
+				$values = implode(', ', $args[2]);
+				$count = $conn->executeUpdate("UPDATE {$table} SET {$sql} WHERE {$args[1]} IN ({$values})", $update);
+				return $count;
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
@@ -439,8 +472,8 @@ trait ModelTrait
 				return $conn->fetchAll("$sql", $values);
 			
 			/**
-			 * @param Array $where clause OR $where clause
-			 *
+			 * @param Array $where first  clause
+			 * @param Array $where alternative clause
 			 * @return array of arrays containing result set
 			**/
 			case 'findor':
@@ -459,6 +492,20 @@ trait ModelTrait
 					$values[] = str_replace('!', '', $value, $a);
 				}
 				$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
+				return $conn->fetchAll("$sql", $values);
+				break;
+
+			/**
+			 * @param string $values to check e.g. "1,3, 4, 5, 7"
+			 * @param string $column to use e.g. "id"
+			 * @return array of arrays containing result set
+			**/
+			case 'findin':
+				$sql = "SELECT * FROM {$table} WHERE";
+				$values = $args[0];
+				$column = str_replace('!', '', $arg[1], $a = 1);
+				$sql .= ( static::negator($column) === true ) ? " {$column} NOT IN " : " {$column} IN ";
+				$sql .= " ($values)";
 				return $conn->fetchAll("$sql", $values);
 				break;
 				
@@ -549,6 +596,24 @@ trait ModelTrait
 				$clause = 'LIMIT ';
 				$clause .= $offset. $args[0];
 		  		return $conn->fetchall("SELECT * FROM {$table} {$clause}");
+		  	/**
+			 * @param array $args[0] updates
+			 * @param array $args[1] column's value to check
+			 * @param array $args[2] values to check column against
+			 * @return array of arrays containing result set
+			**/
+		  	case 'updatemany':
+		  		$sql = "";
+		  		$update = [];
+				foreach ($args[0] as $key => $value) {					
+					$sql .= "$key = ? ,";
+					$update[] = $value;
+					break;
+				}
+				$sql = trim($sql, ' ,');
+				$values = implode(', ', $args[2]);
+				$count = $conn->executeUpdate("UPDATE {$table} SET {$sql} WHERE {$args[1]} IN ({$values})", $update);
+				return $count;
 			/**
 			 * @param string $column to be incremented
 			 * @param value to increment with
