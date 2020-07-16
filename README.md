@@ -2,7 +2,9 @@ A Model Traits Package built on top of Doctrine's DBAL library, for extending an
 
 The ModelTrait should be used inside the Model Class of your project. It requires Doctrine's DBAL package.
 
-#The only methods available are :
+
+
+#The methods available are :
 
 ```bash
 => all() // returns all rows in the table 
@@ -11,9 +13,9 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => findby( [ 'column' => 'value' ] )
 
-=> findor
+=> findor([ clause ], [ alternative clause ])
 
-=> findin("values", "column")
+=> findin(["values"], "column")
 
 => update([ "column" => "new value" ], $where = [ "id" => 1 ]);
 
@@ -23,23 +25,23 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => count(column to count,  [ where column => value]);
 
-=> paginate('number of items to return per page', page number); 
+=> paginate('number of items to return per page', page number);
+
+=> updateMany([column=> new_value], column, [$identifiers])
 
 => delete([ where column => value ])
 
 => softdelete([ where column => value ]) //Constrain: the table must have a deleted column , which will be set to true; else it will return a fatal error.
 
-=> fluent() returns an instance of the Doctrine's DBAL query builder
-```
+=> fluent() returns an instance of Doctrines DBAL QueryBuilder
 
-```
-Note: the where clause only loads a single column condition i.e. "column = ?"
+Note: the where clause of the methods below will only load a single column condition i.e. "column = ?"
 
 => add('column to increment', value to add, ['where column' => value]) 
 
 => minus('column to decreas', value to deduct, ['where column' => value]) the where clause only loads a single "column = ?"
 
-=> addOne('column to increment', ['where column' => value]) the where clause only loads a sing "column = ?"
+=> addOne('column to increment', ['where column' => value)] the where clause only loads a sing "column = ?"
 
 => minusOne('column to decrease', ['where column' => value]) the where clause only loads a sing "column = ?"
 
@@ -100,9 +102,9 @@ class Model
 	* This variable is extremely essential to the proper functioning of the trait due to the underlying Doctrine DBAL package  
 	*/
 	protected static $config = [
-		'dbname' => 'ratemylecturer',
+		'dbname' => 'sample',
 		'user' => 'root',
-		'password' => '',
+		'password' => 'password',
 		'host' => 'localhost',
 	    'driver' => 'pdo_mysql'
 	];
@@ -128,6 +130,12 @@ User::all();
 
 User::query(['deleted' => 'false'], ['groupby' => 'year', 'orderby' => 'id', 'limit' => 10]);
 
+User::distinct(['id', 'first_name', 'age'], ['deleted' => 'false']);
+
+User::count('id', ['verified' => 'true']);
+
+User::Avg('balance', ['verified' => 'true']  );
+
 User::insert([
 	"first_name" => "Elisha", 
 	"other_names" => "Temiloluwa", 
@@ -137,23 +145,33 @@ User::insert([
 
 User::findby([ "other_names" => "Aminat" ]);
 
-User::findor(["name" => "Elisha"], ["name" => "scope"]);
+User::findOr(["name" => "Elisha"], ["name" => "scope"]);
 
-User::findin("1, 2, 3", "id");
+User::findin("1, 2, 3", "id"); //also supports negator User::findin("1, 2, 3", "!id") => means where id NOT IN (1, 2, 3)
 
-User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);
+User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);//returns number of affected rows
 
-User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);
+User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);//returns number of affected rows
 
 User::exists(['id' => 2]);
 
 User::search('Elisha', ['firstname', 'lastname']);
 
-User::addOne('views', ['id' => 2]);
+User::add('views', 1, ['id' => 2]); //returns number of affected rows
+
+User::addOne('views', ['id' => 2]); //returns number of affected rows
+
+User::minus('balance', 1, ['id' => 2]); //returns number of affected rows
+
+User::minusOne('balance', ['id' => 2]); //returns number of affected rows
 
 User::paginate(10, (int)$_GET['page']);
 
-User::delete(['id' => 2])
+User::setTable('posts')->all(); //changes the table to 
+
+User::softDelete(['id' => 2]); //sets deleted column to true
+
+User::delete(['id' => 2]) //returns number of affected rows
 
 User::showColumns() //showns all the columns in this table as properties of the stdClass object
 

@@ -1,7 +1,9 @@
 <?php
-/*
-use Seven\Model\ModelTrait;
+/* 
+require __DIR__.'/../../sevenphp/vendor/autoload.php';
+require_once 'ModelTrait.php';
 
+use Seven\Model\ModelTrait;
 
 class Model
 {
@@ -9,7 +11,7 @@ class Model
 
 	protected static 
 	$config = [
-		'dbname' => 'ratemylecturer',
+		'dbname' => '',
 		'user' => 'root',
 		'password' => '',
 		'host' => 'localhost',
@@ -21,10 +23,11 @@ class Model
 class User extends Model
 {
 	protected static $fulltext = [];
-	protected static $table = 'user';
+	protected static $table = 'users';
 }
 
-User::all();
+var_dump(User::setTable('contents')->all());
+
 User::insert([
 	"first_name" => "Elisha", "other_names" => "Temiloluwa", "last_name" => "Oyawale", "timestamp" => "2019-11-02 15:28:56",
 ]);
@@ -38,5 +41,4 @@ User::add();
 User::delete(['id' => 2])
 
 User::fluent();
-
 */
