@@ -71,7 +71,8 @@ trait ModelTrait
 	public static function findin(string $values, string $column_value) : array
 	{
 		[ $conn, $table ] = static::connection();
-		$sql = "SELECT * FROM {$table} WHERE";
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table} WHERE";
 		$column = str_replace('!', '', $column_value, $a = 1);
 		$sql .= ( static::negator($column_value) === true ) ? " {$column} NOT IN " : " {$column} IN ";
 		$sql .= " ($values)";
@@ -86,7 +87,8 @@ trait ModelTrait
 	public static function findby(array $where): array
 	{
 		[ $conn, $table ] = static::connection();
-		$sql = "SELECT * FROM {$table} WHERE";
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table} WHERE";
 		$values = [];
 		foreach ($where as $key => $value) {					
 			$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
@@ -109,7 +111,8 @@ trait ModelTrait
 		$offset = ($page_num > 0) ? (($page_num * $limit)-$limit ) . ", " : 0 . ", ";
 		$clause = 'LIMIT ';
 		$clause .= $offset. $limit;
-  		return $conn->fetchall("SELECT * FROM {$table} {$clause}");
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+  		return $conn->fetchall("SELECT {$cols} FROM {$table} {$clause}");
 	}
 
 	/**
@@ -137,7 +140,8 @@ trait ModelTrait
 	  		}
   		}
   		$where = rtrim($where, ' OR ');
-  		return $conn->fetchall("SELECT * FROM {$table} WHERE {$where}", $values);
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+  		return $conn->fetchall("SELECT {$cols} FROM {$table} WHERE {$where}", $values);
 	}
 
 	/**
@@ -167,7 +171,8 @@ trait ModelTrait
 	public static function findfirst($where): array
 	{
 		[ $conn, $table ] = static::connection();
-		$sql = "SELECT * FROM {$table}";
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table}";
 		$where = "";
 		$values = [];
 		if (!empty($where)) {
@@ -236,7 +241,8 @@ trait ModelTrait
 	public static function query($clause = [], $filters = [])
 	{
 		[ $conn, $table ] = static::connection();
-		$sql = "SELECT * FROM {$table}";
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table}";
 		$values = [];
 		if ( !empty($clause) ) {		
 			$sql .= " WHERE";												
@@ -267,7 +273,8 @@ trait ModelTrait
 	public static function findOr(array $clause, array $alt): array
 	{
 		[ $conn, $table ] = static::connection();
-		$sql = "SELECT * FROM {$table} WHERE";
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table} WHERE";
 		$values = [];
 		$where1 = "";
 		foreach ($clause as $key => $value) {					

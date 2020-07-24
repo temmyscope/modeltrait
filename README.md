@@ -121,6 +121,9 @@ class User extends Model
 
 	//the fulltext columns in the above table, for optimized complicated Match...Against Queries.
 	protected static $fulltext = [];
+
+	//queries will only return columns in the fetchable array
+	protected static $fetchable = ['id', 'name', 'created_at']; // new feature and backwards compatible
 }
 
 
