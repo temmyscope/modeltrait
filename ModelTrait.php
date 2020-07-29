@@ -74,9 +74,8 @@ trait ModelTrait
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
 		$sql = "SELECT {$cols} FROM {$table} WHERE";
 		$column = str_replace('!', '', $column_value, $a = 1);
-		$sql .= ( static::negator($column_value) === true ) ? " {$column} NOT IN " : " {$column} IN ";
-		$sql .= " ($values)";
-		return $conn->fetchAll("$sql", $values);
+		$sql .= ( static::negator($column_value) === true ) ? " {$column} NOT IN ($values)" : " {$column} IN ($values)";
+		return $conn->fetchAll($sql);
 	}
 
 	/**
@@ -96,7 +95,7 @@ trait ModelTrait
 			$values[] = str_replace('!', '', $value, $a);
 		}
 		$sql = rtrim($sql, ' AND');
-		return $conn->fetchAll("$sql", $values);
+		return $conn->fetchAll($sql, $values);
 	}
 
 	/**
@@ -160,7 +159,7 @@ trait ModelTrait
 			$values[] = str_replace('!', '', $value, $a);
 		}
 		$sql = rtrim($sql, ' AND')." LIMIT 1";
-		return (empty($conn->fetchAll("$sql", $values))) ? false : true;
+		return (empty($conn->fetchAll($sql, $values))) ? false : true;
 	}
 
 	/**
@@ -184,7 +183,7 @@ trait ModelTrait
 			}
 			$where = rtrim($where, ' AND');
 		}
-		$data = $conn->fetchAll("$sql $where LIMIT 1", $values);
+		$data = $conn->fetchAll($sql.$where." LIMIT 1", $values);
 		return (!empty($data)) ? (object)$data[0] : [];
 	}
 
@@ -262,7 +261,7 @@ trait ModelTrait
 		if (array_key_exists('limit', $filters ) && !empty($filters['limit'])) {												
 			$sql .= " LIMIT {$filters['limit']}";												
 		}
-		return $conn->fetchAll("$sql", $values);
+		return $conn->fetchAll($sql, $values);
 	}
 
 	/**
@@ -289,7 +288,7 @@ trait ModelTrait
 			$values[] = str_replace('!', '', $value, $a);
 		}
 		$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
-		return $conn->fetchAll("$sql", $values);
+		return $conn->fetchAll($sql, $values);
 	}
 
 	/**
