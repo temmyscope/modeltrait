@@ -165,9 +165,9 @@ trait ModelTrait
 	/**
 	 * @param Array $where clause
 	 *
-	 * @return array of arrays containing result set
+	 * @return object OR empty array
 	**/
-	public static function findfirst($where): array
+	public static function findfirst($where)
 	{
 		[ $conn, $table ] = static::connection();
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";

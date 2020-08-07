@@ -2,7 +2,7 @@
     "name": "sevens/model-trait",
     "description": "Model Traits for extending Doctrine's dbal functionality. To be used in the developer's main model.",
     "type": "library",
-    "version": "v2.0.0",
+    "version": "v2.0.1",
     "license": "MIT",
     "minimum-stability": "dev",
     "config": {
