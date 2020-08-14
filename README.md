@@ -3,11 +3,18 @@ A Model Traits Package built on top of Doctrine's DBAL library, for extending an
 The ModelTrait should be used inside the Model Class of your project. It requires Doctrine's DBAL package.
 
 
+## Installation
+
+```bash
+composer require sevens/vars
+```
+
 
 #The methods available are :
 
-```bash
-=> all() // returns all rows in the table 
+```php
+// returns all rows in the table 
+=> all()
 
 => query(['columns' => 'values'], ['groupby' => '', 'orderby' => '', 'limit' => 10]);
 
@@ -31,7 +38,8 @@ The ModelTrait should be used inside the Model Class of your project. It require
 
 => delete([ where column => value ])
 
-=> softdelete([ where column => value ]) //Constrain: the table must have a deleted column , which will be set to true; else it will return a fatal error.
+//Constraint: the table must have a deleted column , which will be set to true; else it will return a fatal error.
+=> softdelete([ where column => value ]) 
 
 => fluent() returns an instance of Doctrines DBAL QueryBuilder
 
@@ -138,6 +146,14 @@ User::distinct(['id', 'first_name', 'age'], ['deleted' => 'false']);
 User::count('id', ['verified' => 'true']);
 
 User::Avg('balance', ['verified' => 'true']  );
+
+User::Max('balance', 'max_balance');
+
+User::Min('balance', 'min_balance');
+
+User::range('balance', [ 10.80, 89.50 ]);
+
+User::dateRange('created_at', [ '9/27/2018', '9/27/2020' ]);
 
 User::insert([
 	"first_name" => "Elisha", 

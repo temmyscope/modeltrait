@@ -64,6 +64,75 @@ trait ModelTrait
 	}
 
 	/**
+	* @param string $column
+	* @param string $alias
+	*
+	* @return array of arrays
+	*/
+	public static function Max(string $column, string $alias): array
+	{
+		[ $conn, $table ] = static::connection();
+		return $conn->fetchAll("SELECT MAX({$column}) AS {$alias} FROM {$table}");
+	}
+
+	/**
+	* @param string $column
+	* @param string $alias
+	*
+	* @return array of arrays
+	*/
+	public static function Min(string $column, string $alias): array
+	{
+		[ $conn, $table ] = static::connection();
+		return $conn->fetchAll("SELECT MIN({$column}) AS {$alias} FROM {$table}");
+	}
+
+	/**
+	 * @param Array $where clause
+	 *
+	 * @return array of arrays containing result set
+	**/
+	public static function operator(array $where): array
+	{
+		[ $conn, $table ] = static::connection();
+		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+		$sql = "SELECT {$cols} FROM {$table} WHERE";
+		$values = [];
+		foreach ($where as $key => $value) {
+			$operator = static::operation($value);
+			$sql .= " {$key} {$operator} ? AND";
+			$values[] = ltrim($value, $operator[0]);
+		}
+		$sql = rtrim($sql, ' AND');
+		return $conn->fetchAll($sql, $values);
+	}
+
+	/**
+	* @param $column
+	* @param $range of format [min_value, max_value]
+	* @example of range = [0, 9]
+	* 
+	* @return array of arrays
+	*/
+	public static function range(string $column, array $range): array
+	{
+		[ $conn, $table ] = static::connection();
+		return $conn->fetchAll("SELECT * FROM {$table} WHERE {$column} BETWEEN {$range[0]} AND {$range[1]}");
+	}
+
+	/**
+	* @param $column
+	* @param $range of date [min_value, max_value]
+	* @example date 07/04/2020 refers to 04th of july, 2020
+	* 
+	* @return array of arrays
+	*/
+	public static function dateRange(string $column, array $range): array
+	{
+		return static::range($column, [ '#'.$range[0].'#', '#'.$range[1].'#' ]);
+	}
+
+	/**
 	 * @param string $values to check e.g. "1,3, 4, 5, 7"
 	 * @param string $column to use e.g. "id"
 	 * @return array of arrays containing result set
@@ -73,7 +142,7 @@ trait ModelTrait
 		[ $conn, $table ] = static::connection();
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
 		$sql = "SELECT {$cols} FROM {$table} WHERE";
-		$column = str_replace('!', '', $column_value, $a = 1);
+		$column = ltrim($column_value, '!');
 		$sql .= ( static::negator($column_value) === true ) ? " {$column} NOT IN ($values)" : " {$column} IN ($values)";
 		return $conn->fetchAll($sql);
 	}
@@ -92,7 +161,7 @@ trait ModelTrait
 		foreach ($where as $key => $value) {					
 			$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
 			$a = 1;
-			$values[] = str_replace('!', '', $value, $a);
+			$values[] = ltrim($value, '!');
 		}
 		$sql = rtrim($sql, ' AND');
 		return $conn->fetchAll($sql, $values);
@@ -155,8 +224,7 @@ trait ModelTrait
 		$values = [];
 		foreach ($where as $key => $value) {
 			$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-			$a = 1;
-			$values[] = str_replace('!', '', $value, $a);
+			$values[] = ltrim($value, '!');
 		}
 		$sql = rtrim($sql, ' AND')." LIMIT 1";
 		return (empty($conn->fetchAll($sql, $values))) ? false : true;
@@ -178,8 +246,7 @@ trait ModelTrait
 			$where .= " WHERE ";
 			foreach ($where as $key => $value) {
 				$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-				$a = 1;
-				$values[] = str_replace('!', '', $value, $a);
+				$values[] = ltrim($value, '!');
 			}
 			$where = rtrim($where, ' AND');
 		}
@@ -201,8 +268,7 @@ trait ModelTrait
 			$where .= "WHERE ";
   			foreach($clause as $column => $value){															
 				$where .= ( static::negator($value) === true ) ? " {$column}  != ? AND" : " {$column}  = ? AND";
-				$a = 1;
-				$values[] = str_replace('!', '', $value, $a);												
+				$values[] = ltrim($value, '!');
 	  		}
   		}
   		$where = rtrim($where, ' AND');
@@ -223,8 +289,7 @@ trait ModelTrait
 			$where .= "WHERE ";
   			foreach($clause as $column => $value){															
 				$where .= ( static::negator($value) === true ) ? " {$column}  != ? AND" : " {$column}  = ? AND";
-				$a = 1;
-				$values[] = str_replace('!', '', $value, $a);												
+				$values[] = ltrim($value, '!');
 	  		}
   		}
   		$where = rtrim($where, ' AND');
@@ -247,9 +312,8 @@ trait ModelTrait
 			$sql .= " WHERE";												
 			foreach ( $clause as $key => $value) {
 				$sql .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-				$a = 1;
-				$values[] = str_replace('!', '', $value, $a);						
-			}																				
+				$values[] = ltrim($value, '!');
+			}
 			$sql = rtrim($sql, ' AND');																		
 		}																			
 		if (array_key_exists('groupby', $filters ) && !empty($filters['groupby'])) {
@@ -278,14 +342,12 @@ trait ModelTrait
 		$where1 = "";
 		foreach ($clause as $key => $value) {					
 			$where1 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-			$a = 1;
-			$values[] = str_replace('!', '', $value, $a);
+			$values[] = ltrim($value, '!');
 		}
 		$where2 = "";
 		foreach ($alt as $key => $value) {			
 			$where2 .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-			$a = 1;
-			$values[] = str_replace('!', '', $value, $a);
+			$values[] = ltrim($value, '!');
 		}
 		$sql = $sql.' ('.rtrim($where1, ' AND'). ') OR ('.rtrim($where2, ' AND').')';
 		return $conn->fetchAll($sql, $values);
@@ -307,8 +369,7 @@ trait ModelTrait
 			$where .= " WHERE ";
 			foreach ($clause as $key => $value) {
 				$where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
-				$a = 1;
-				$values[] = str_replace('!', '', $value, $a);
+				$values[] = ltrim($value, '!');
 			}
 			$where = rtrim($where, ' AND');
 		}
@@ -479,6 +540,25 @@ trait ModelTrait
 			return true;
 		}
 		return false;
+	}
+
+	/** 
+	* Checks if a string contains special operators
+	* @param string $value to test
+	* @return string
+	**/
+	private static function operation(string $value): string
+	{
+		$operators = ['>', '<', '!'];
+		foreach($operators as $operator){
+			if( $value[0] === $operator ){
+				if ($operator === '!') {
+					return '!=';
+				}
+				return $operator;
+			}
+		}
+		return "";
 	}
 
 }
