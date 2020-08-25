@@ -69,7 +69,7 @@ trait ModelTrait
 	*
 	* @return array of arrays
 	*/
-	public static function Max(string $column, string $alias): array
+	public static function max(string $column, string $alias): array
 	{
 		[ $conn, $table ] = static::connection();
 		return $conn->fetchAll("SELECT MAX({$column}) AS {$alias} FROM {$table}");
@@ -81,7 +81,7 @@ trait ModelTrait
 	*
 	* @return array of arrays
 	*/
-	public static function Min(string $column, string $alias): array
+	public static function min(string $column, string $alias): array
 	{
 		[ $conn, $table ] = static::connection();
 		return $conn->fetchAll("SELECT MIN({$column}) AS {$alias} FROM {$table}");
@@ -137,7 +137,7 @@ trait ModelTrait
 	 * @param string $column to use e.g. "id"
 	 * @return array of arrays containing result set
 	**/
-	public static function findin(string $values, string $column_value) : array
+	public static function findIn(string $values, string $column_value) : array
 	{
 		[ $conn, $table ] = static::connection();
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
@@ -152,7 +152,7 @@ trait ModelTrait
 	 *
 	 * @return array of arrays containing result set
 	**/
-	public static function findby(array $where): array
+	public static function findBy(array $where): array
 	{
 		[ $conn, $table ] = static::connection();
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
@@ -235,7 +235,7 @@ trait ModelTrait
 	 *
 	 * @return object OR empty array
 	**/
-	public static function findfirst($where)
+	public static function findFirst($where)
 	{
 		[ $conn, $table ] = static::connection();
 		$cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
@@ -259,7 +259,7 @@ trait ModelTrait
 	 *
 	 * @return value
 	**/
-	public static function Avg(string $column, array $clause)
+	public static function avg(string $column, array $clause)
 	{
 		[ $conn, $table ] = static::connection();
 		$where = "";
@@ -379,7 +379,7 @@ trait ModelTrait
 	/**
 	 * @return columns
 	**/
-	public static function showcolumns()
+	public static function showColumns()
 	{
 		[ $conn, $table ] = static::connection();
 		$t = $conn->fetchall("SHOW COLUMNS FROM {$table}");

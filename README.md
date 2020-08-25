@@ -1,7 +1,8 @@
-A Model Traits Package built on top of Doctrine's DBAL library, for extending and easing up the use of Doctrine's DBAL.
+A Model Traits Package built on top of Doctrine's DBAL library, for extending and easing up the use of Doctrine's DBAL while maintaining a sane level of simplicity.
+
+This is a lighter ORM Trait for developers that would prefer a light, capable and easy-to-use library instead of an Omnipotent Library.
 
 The ModelTrait should be used inside the Model Class of your project. It requires Doctrine's DBAL package.
-
 
 ## Installation
 
@@ -13,7 +14,7 @@ composer require sevens/vars
 #The methods available are :
 
 ```php
-// returns all rows in the table 
+#returns all rows in the table 
 => all()
 
 => query(['columns' => 'values'], ['groupby' => '', 'orderby' => '', 'limit' => 10]);
@@ -145,13 +146,16 @@ User::distinct(['id', 'first_name', 'age'], ['deleted' => 'false']);
 
 User::count('id', ['verified' => 'true']);
 
-User::Avg('balance', ['verified' => 'true']  );
+User::avg('balance', ['verified' => 'true']  );
 
-User::Max('balance', 'max_balance');
+User::max('balance', 'max_balance');
 
-User::Min('balance', 'min_balance');
+User::min('balance', 'min_balance');
 
 User::range('balance', [ 10.80, 89.50 ]);
+
+//support for >, < operators
+User::operator([ 'balance' => '>12.00' ])
 
 User::dateRange('created_at', [ '9/27/2018', '9/27/2020' ]);
 
@@ -162,11 +166,11 @@ User::insert([
 	"timestamp" => "2019-11-02 15:28:56"
 ]);
 
-User::findby([ "other_names" => "Aminat" ]);
+User::findBy([ "other_names" => "Aminat" ]);
 
 User::findOr(["name" => "Elisha"], ["name" => "scope"]);
 
-User::findin("1, 2, 3", "id"); //also supports negator User::findin("1, 2, 3", "!id") => means where id NOT IN (1, 2, 3)
+User::findIn("1, 2, 3", "id"); //also supports negator User::findin("1, 2, 3", "!id") => means where id NOT IN (1, 2, 3)
 
 User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);//returns number of affected rows
 
