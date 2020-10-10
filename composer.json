@@ -1,8 +1,8 @@
 {
     "name": "sevens/model-trait",
-    "description": "Model Traits for extending Doctrine's dbal functionality. To be used in the developer's main model.",
+    "description": "Model Traits for extending Doctrine's dbal functionality. Only to be used in minor projects not cloud deployed projects.",
     "type": "library",
-    "version": "v2.1.0",
+    "version": "v2.2.0",
     "license": "MIT",
     "minimum-stability": "dev",
     "config": {
@@ -12,7 +12,7 @@
     },
     "autoload": {
         "classmap": {
-            "Seven\\Model\\ModelTrait": "ModelTrait.php"
+            "Seven\\Model\\ModelTrait": "src/ModelTrait.php"
         }
     },
     "require": {

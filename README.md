@@ -103,20 +103,9 @@ use Seven\Model\ModelTrait;
 
 //setup your model class and the variables (with these names) necessary for the trait
 
-class Model
-{
+class Model {
+	
 	use ModelTrait;
-
-	/**
-	* This variable is extremely essential to the proper functioning of the trait due to the underlying Doctrine DBAL package  
-	*/
-	protected static $config = [
-		'dbname' => 'sample',
-		'user' => 'root',
-		'password' => 'password',
-		'host' => 'localhost',
-	    'driver' => 'pdo_mysql'
-	];
 
 }
 

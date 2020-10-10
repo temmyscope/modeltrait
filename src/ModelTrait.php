@@ -19,15 +19,6 @@ trait ModelTrait
     * @var static $table that is defined and declared in the child class of this model
     * @example protected static $table = 'user';
     *
-    * @example
-    * @var static $config = [
-    *       'dbname' => 'mydb',
-    *       'user' => 'user',
-    *       'password' => 'secret',
-    *       'host' => 'localhost',
-    *       'driver' => 'pdo_mysql',
-    *   ];
-    *
     * @var $fulltext refers to fulltext colums that can be searched using complicated match...against sql queries.
     *
     *
@@ -35,7 +26,17 @@ trait ModelTrait
 
     private static function connection()
     {
-        return [ DriverManager::getConnection(static::$config), static::$table ];
+        return [ 
+            DriverManager::getConnection([ 
+                'url' => 
+                $_ENV['DB_DRIVER'].'://'.
+                $_ENV['DB_USER'].':'.
+                $_ENV['DB_PASS'].'@'.
+                $_ENV['DB_HOST'].'/'.
+                $_ENV['DB_NAME']
+            ]), 
+            static::$table 
+        ];
     }
 
     /**
@@ -237,17 +238,17 @@ trait ModelTrait
      *
      * @return object OR empty array
     **/
-    public static function findFirst($where)
+    public static function findFirst($clause = [])
     {
         [ $conn, $table ] = static::connection();
         $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table}";
         $where = "";
         $values = [];
-        if (!empty($where)) {
+        if( !empty($clause) ){
             $where .= " WHERE ";
-            foreach ($where as $key => $value) {
-                $where .= ( static::negator($value) === true ) ? " {$key}  != ? AND" : " {$key}  = ? AND";
+            foreach ($clause as $key => $value) {
+                $where .= ( static::negator($value) === true ) ? " {$key} != ? AND" : " {$key}  = ? AND";
                 $values[] = ltrim($value, '!');
             }
             $where = rtrim($where, ' AND');
