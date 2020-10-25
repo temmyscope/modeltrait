@@ -14,35 +14,21 @@ use Doctrine\DBAL\Query\QueryBuilder;
 
 trait ModelTrait
 {
-    /**
-    * The following protected properties must be implemented, defined and declared in the Model class using this trait
-    * @var static $table that is defined and declared in the child class of this model
-    * @example protected static $table = 'user';
-    *
-    * @var $fulltext refers to fulltext colums that can be searched using complicated match...against sql queries.
-    *
-    *
-    */
-
     private static function connection()
     {
         return [ 
             DriverManager::getConnection([ 
                 'url' => 
-                $_ENV['DB_DRIVER'].'://'.
-                $_ENV['DB_USER'].':'.
-                $_ENV['DB_PASS'].'@'.
-                $_ENV['DB_HOST'].'/'.
-                $_ENV['DB_NAME']
+                getenv('DB_DRIVER').'://'.getenv('DB_USER').':'.getenv('DB_PASS').'@'.
+                getenv('DB_HOST').'/'.getenv('DB_NAME')
             ]), 
-            static::$table 
+            static::$table
         ];
     }
 
     /**
     * @param $data
-    * @example
-    * $data = [
+    * @example = [
     *   'column' => 'data'
     *   'name' => 'John Well',
     *   'username' => 'john086'
@@ -97,7 +83,7 @@ trait ModelTrait
     public static function operator(array $where): array
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table} WHERE";
         $values = [];
         foreach ($where as $key => $value) {
@@ -142,7 +128,7 @@ trait ModelTrait
     public static function findIn(string $values, string $column_value): array
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table} WHERE";
         $column = ltrim($column_value, '!');
         $sql .= ( static::negator($column_value) === true ) ?
@@ -158,7 +144,7 @@ trait ModelTrait
     public static function findBy(array $where): array
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table} WHERE";
         $values = [];
         foreach ($where as $key => $value) {
@@ -182,7 +168,7 @@ trait ModelTrait
         $offset = ($page_num > 0) ? (($page_num * $limit) - $limit ) . ", " : 0 . ", ";
         $clause = 'LIMIT ';
         $clause .= $offset . $limit;
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         return $conn->fetchall("SELECT {$cols} FROM {$table} {$clause}");
     }
 
@@ -211,7 +197,7 @@ trait ModelTrait
             }
         }
         $where = rtrim($where, ' OR ');
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         return $conn->fetchall("SELECT {$cols} FROM {$table} WHERE {$where}", $values);
     }
 
@@ -241,7 +227,7 @@ trait ModelTrait
     public static function findFirst($clause = [])
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table}";
         $where = "";
         $values = [];
@@ -308,7 +294,7 @@ trait ModelTrait
     public static function query($clause = [], $filters = [])
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table}";
         $values = [];
         if (!empty($clause)) {
@@ -339,7 +325,7 @@ trait ModelTrait
     public static function findOr(array $clause, array $alt): array
     {
         [ $conn, $table ] = static::connection();
-        $cols = (isset(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
+        $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table} WHERE";
         $values = [];
         $where1 = "";

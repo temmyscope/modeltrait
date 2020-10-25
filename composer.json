@@ -2,7 +2,7 @@
     "name": "sevens/model-trait",
     "description": "Model Traits for extending Doctrine's dbal functionality.",
     "type": "library",
-    "version": "v2.2.0",
+    "version": "v2.5.0",
     "license": "MIT",
     "minimum-stability": "dev",
     "config": {
@@ -11,8 +11,8 @@
         "sort-packages": true
     },
     "autoload": {
-        "classmap": {
-            "Seven\\Model\\ModelTrait": "src/ModelTrait.php"
+        "psr-4": {
+            "Seven\\Model\\": "src/"
         }
     },
     "require": {
@@ -27,6 +27,6 @@
         }
     ],
     "keywords": [
-        "dbal", "model", "database", "traits"
+        "dbal", "model", "database", "traits", "db"
     ]
 }

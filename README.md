@@ -1,13 +1,22 @@
-A Model Traits Package built on top of Doctrine's DBAL library, for extending and easing up the use of Doctrine's DBAL while maintaining a sane level of simplicity.
+## Seven SQL DataBase Model
+	
+	- It is part of the libraries used on the altvel framework project but can be used in any applicable project
 
-This is a lighter ORM Trait for developers that would prefer a light, capable and easy-to-use library instead of an Omnipotent Library.
+	- Model & ModelTrait a.k.a model-trait is developed by Elisha Temiloluwa a.k.a TemmyScope	
 
-The ModelTrait should be used inside the Model Class of your project. It requires Doctrine's DBAL package.
+	- Developed to make easier the routine of database querying for small-scale to medium-scale projects
+
+	- It is a lightweight wrapper trait around the Doctrine DBAL's Library
+
+	- built on top of Doctrine's DBAL library, for extending Doctrine's DBAL while maintaining a sane level of simplicity.
+
+	- It is a lighter ORM Trait for developers that would prefer a light, capable and easy-to-use library instead of an Omnipotent Library.
+
 
 ## Installation
 
 ```bash
-composer require sevens/vars
+composer require sevens/model-trait
 ```
 
 
@@ -92,18 +101,41 @@ e.g. User::updateMany(['verified'=> 'true', 'active' => 'false'], 'id', [1, 9, 1
 UPDATE user SET verified = 'true', active = 'false' WHERE id IN (1, 9, 10);
 ```
 
+### New Usage: Latest Versions
+##
+
+```php
+#import the library into your model class namespace
+
+use Seven\Model\{Model, ModelInterface};
+
+class User extends Model implements ModelInterface
+{
+	//the table variable
+	protected static $table = 'user';
+
+	//the fulltext columns in the above table, for optimized complicated Match...Against Queries.
+	protected static $fulltext = [];
+
+	//queries will only return columns in the fetchable array
+	protected static $fetchable = ['id', 'name', 'created_at'];
+}
+```
+
+### Older Uasge: Older Versions of the Library still supported
+##
 
 ```php
 
 ##An Example use case of this trait and how to fuse it right into your model classes is shown below:
 
 //import the library into your model class namespace
-use Seven\Model\ModelTrait;
+use Seven\Model\{ModelTrait, ModelInterface};
 
 
 //setup your model class and the variables (with these names) necessary for the trait
 
-class Model {
+class Model{
 	
 	use ModelTrait;
 
@@ -112,7 +144,7 @@ class Model {
 //set up individual model child classes with their static table name set
 //The ModelTrait uses late static binding.
 
-class User extends Model
+class User extends Model implements ModelInterface
 {
 	//the table variable
 	protected static $table = 'user';
@@ -123,10 +155,12 @@ class User extends Model
 	//queries will only return columns in the fetchable array
 	protected static $fetchable = ['id', 'name', 'created_at']; // new feature and backwards compatible
 }
+```
 
+### Example Usage
+##
 
-//You can call the methods like these:
-
+```php
 User::all();
 
 User::query(['deleted' => 'false'], ['groupby' => 'year', 'orderby' => 'id', 'limit' => 10]);
