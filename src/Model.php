@@ -2,7 +2,7 @@
 
 namespace Seven\Model;
 
-use Seven\Model\{ModelTrait, ModelInterface};
+use Seven\Model\ModelTrait;
 
 /**
  *
@@ -11,7 +11,7 @@ use Seven\Model\{ModelTrait, ModelInterface};
  *
 **/
 
-class Model implements ModelInterface{
+class Model{
 	
 		use ModelTrait;
 

@@ -1,6 +1,6 @@
 {
     "name": "sevens/model-trait",
-    "description": "Model Traits for extending Doctrine's dbal functionality.",
+    "description": "Model Traits for extending Doctrine's dbal functionality while maintaining simplicity.",
     "type": "library",
     "version": "v1.0.0",
     "license": "MIT",

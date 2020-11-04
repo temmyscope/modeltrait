@@ -17,7 +17,40 @@
 composer require sevens/model-trait
 ```
 
-#The methods available are :
+## Usage Properties
+
+```php
+/**
+* The following protected properties must be implemented, defined and declared in the Model Child class using this trait
+*
+* @property string $table that is defined and declared in the child class of this model
+* @example protected static $table = 'user';
+*
+*/
+
+  protected static $table;
+
+/**
+  * If none, set to empty array
+  *
+  * @property [] $fulltext refers to fulltext columns that can be searched using complicated match...against sql queries.
+  *
+  */
+
+protected static $fulltext;
+
+  /**
+  * If you want to retrieve all, leave as empty 
+  *
+  * @property array $fetchable
+  * @example  = [ 'id', 'username', 'email'];
+  */
+
+protected static $fetchable;
+
+```
+
+## The methods available are :
 
 ```php
 #returns all rows in the table 
@@ -96,15 +129,15 @@ e.g. User::updateMany(['verified'=> 'true', 'active' => 'false'], 'id', [1, 9, 1
 UPDATE user SET verified = 'true', active = 'false' WHERE id IN (1, 9, 10);
 ```
 
-### New Usage: Latest Versions
+### Usage
 ##
 
 ```php
 #import the library into your model class namespace
 
-use Seven\Model\{Model, ModelInterface};
+use Seven\Model\Model;
 
-class User extends Model implements ModelInterface
+class User extends Model
 {
 	//the table variable
 	protected static $table = 'user';
@@ -114,41 +147,6 @@ class User extends Model implements ModelInterface
 
 	//queries will only return columns in the fetchable array
 	protected static $fetchable = ['id', 'name', 'created_at'];
-}
-```
-
-### Older Uasge: Older Versions of the Library still supported
-##
-
-```php
-
-##An Example use case of this trait and how to fuse it right into your model classes is shown below:
-
-//import the library into your model class namespace
-use Seven\Model\{ModelTrait, ModelInterface};
-
-
-//setup your model class and the variables (with these names) necessary for the trait
-
-class Model{
-	
-	use ModelTrait;
-
-}
-
-//set up individual model child classes with their static table name set
-//The ModelTrait uses late static binding.
-
-class User extends Model implements ModelInterface
-{
-	//the table variable
-	protected static $table = 'user';
-
-	//the fulltext columns in the above table, for optimized complicated Match...Against Queries.
-	protected static $fulltext = [];
-
-	//queries will only return columns in the fetchable array
-	protected static $fetchable = ['id', 'name', 'created_at']; // new feature and backwards compatible
 }
 ```
 
