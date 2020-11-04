@@ -4,13 +4,11 @@
 
 	- Model & ModelTrait a.k.a model-trait is developed by Elisha Temiloluwa a.k.a TemmyScope	
 
-	- Developed to make easier the routine of database querying for small-scale to medium-scale projects
+	- Developed to make easier the routine of database querying for small to medium-scale projects
 
-	- It is a lightweight wrapper trait around the Doctrine DBAL's Library
+	- It is a lightweight wrapper trait around the Doctrine DBAL's Library, maintaining a sane level of simplicity.
 
-	- built on top of Doctrine's DBAL library, for extending Doctrine's DBAL while maintaining a sane level of simplicity.
-
-	- It is a lighter ORM Trait for developers that would prefer a light, capable and easy-to-use library instead of an Omnipotent Library.
+	- It is a lighter ORM Trait for developers that would prefer a light, capable and easy-to-use library rather than an Omnipotent Library.
 
 
 ## Installation
@@ -174,6 +172,7 @@ User::min('balance', 'min_balance');
 
 User::range('balance', [ 10.80, 89.50 ]);
 
+#returns users where the condition is passed or true
 //support for >, < operators
 User::operator([ 'balance' => '>12.00' ])
 
