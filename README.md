@@ -19,7 +19,6 @@
 composer require sevens/model-trait
 ```
 
-
 #The methods available are :
 
 ```php
