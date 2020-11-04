@@ -64,8 +64,6 @@ Note: the where clause of the methods below will only load a single column condi
 
 ```
 
-Version 1.5.0 upward brings :
-
 => addition of query method that accepts group, order and limits conditions.
 
 =>support for negators to all selector method that accept clause(s) including exists(), findOr, findIn and count() queries.
