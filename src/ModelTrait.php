@@ -19,8 +19,8 @@ trait ModelTrait
         return [ 
             DriverManager::getConnection([ 
                 'url' => 
-                getenv('DB_DRIVER').'://'.getenv('DB_USER').':'.getenv('DB_PASS').'@'.
-                getenv('DB_HOST').'/'.getenv('DB_NAME')
+                str_replace('pdo_', '', env('DB_DRIVER')).'://'.env('DB_USER').':'.env('DB_PASS').'@'.
+                env('DB_HOST').'/'.env('DB_NAME')
             ]), 
             static::$table
         ];
