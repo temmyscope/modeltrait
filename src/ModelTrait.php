@@ -121,16 +121,17 @@ trait ModelTrait
     }
 
     /**
-     * @param string $values to check e.g. "1,3, 4, 5, 7"
+     * @param string $values to check e.g. [1,3, 4, 5, 7]
      * @param string $column to use e.g. "id"
      * @return array of arrays containing result set
     **/
-    public static function findIn(string $values, string $column_value): array
+    public static function findIn(array $values, string $column_value): array
     {
         [ $conn, $table ] = static::connection();
         $cols = (!empty(static::$fetchable)) ? implode(', ', static::$fetchable) : "*";
         $sql = "SELECT {$cols} FROM {$table} WHERE";
         $column = ltrim($column_value, '!');
+        $values = implode(',', $values);
         $sql .= ( static::negator($column_value) === true ) ?
             " {$column} NOT IN ($values)" : " {$column} IN ($values)";
         return $conn->fetchAll($sql);

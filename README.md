@@ -62,7 +62,7 @@ protected static $fetchable;
 
 => findor([ clause ], [ alternative clause ])
 
-=> findin(["values"], "column")
+=> findin(["values", ...], "column")
 
 => update([ "column" => "new value" ], $where = [ "id" => 1 ]);
 
@@ -187,11 +187,16 @@ User::findBy([ "other_names" => "Aminat" ]);
 
 User::findOr(["name" => "Elisha"], ["name" => "scope"]);
 
-User::findIn("1, 2, 3", "id"); //also supports negator User::findin("1, 2, 3", "!id") => means where id NOT IN (1, 2, 3)
+User::findIn([1, 2, 3], "id"); 
 
-User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);//returns number of affected rows
+//also supports negator  => means where id NOT IN (1, 2, 3)
+User::findin([1, 2, 3], "!id");
 
-User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);//returns number of affected rows
+#returns number of affected rows
+User::updateMany(['verified'=> 'true'], 'id', [1, 9, 10]);
+
+#returns number of affected rows
+User::update([ "other_names" => "Aminat" ], [ "id" => 1 ]);
 
 User::exists(['id' => 2]);
 
